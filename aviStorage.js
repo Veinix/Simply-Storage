@@ -318,25 +318,23 @@ const cch = {
             })
         }
     },
-    // TODO test this
     /**
-     * Opens a named cache in the cache storage, then stores the data from multiple urls in each one. Set overwite to true to overwrite the data in the named cache if it exists
+     * Opens a named cache in the cache storage, then stores the data from multiple urls in it. Set overwite to true to overwrite the data in the named cache if it exists
      *
      * @param {string} cacheName - The name of the cache to open
      * @param {Object<Array>} url - URLs of data, organized in an array
      * @param {boolean} [overwrite] - Determines if the method overwrites
      * @returns {Promise<Cache>} A promise that resolves to the opened Cache object.
      */
-    async addAll(cacheName, urls) {
+    async addAll(cacheName, urls, overwrite) {
         cacheName = cacheName.toString();
         if (overwrite) {
             return await caches.open(cacheName).then((cache) => {
-                array.forEach(request => {
-                    fetch(request)
+                urls.forEach(url => {
+                    fetch(url)
                     .then((response) => {
                         cache
-                        .put(request, response)
-                        .then(() => console.log("Data added to cache."))
+                        .put(url, response)
                         .catch((error) => console.error("Error adding data to cache:", error));
                     })
                     .catch((error) => console.error("Error fetching data:", error));
@@ -346,7 +344,6 @@ const cch = {
             return await caches.open(cacheName).then((cache) => {
                 cache
                 .addAll(urls)
-                .then(()=> console.log("Data added to cache - (addAll method)"))
                 .catch((err) => console.error("Error adding data to the cache: ", err));
             })
         }
